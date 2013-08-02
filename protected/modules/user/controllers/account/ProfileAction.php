@@ -3,23 +3,24 @@ class ProfileAction extends CAction
 {
     public function run()
     {
-        $form = new ProfileForm;
-
         if (!Yii::app()->user->isAuthenticated())
             $this->controller->redirect(array(Yii::app()->user->loginUrl));
 
+        $module = Yii::app()->getModule('user');
+        
+        $form = $module->createProfileForm();
+        $formName = get_class($form);        
+        
         $user = Yii::app()->user->profile;
         $form->setAttributes($user->attributes);
         $form->password = $form->cPassword = null;
 
-        $module = Yii::app()->getModule('user');
-
         $event = new CModelEvent($this->controller);
         $module->onBeginProfile($event);
 
-        if (Yii::app()->request->isPostRequest && !empty($_POST['ProfileForm']))
+        if (Yii::app()->request->isPostRequest && !empty($_POST[$formName]))
         {
-            $form->setAttributes($_POST['ProfileForm']);
+            $form->setAttributes($_POST[$formName]);
 
 
             if ($form->validate())
@@ -92,6 +93,7 @@ class ProfileAction extends CAction
                     $uploadedFile = CUploadedFile::getInstance($form, 'avatar');
                     if($uploadedFile) {
                         $user->changeAvatar($uploadedFile);
+                        $user->use_gravatar = false;
                     }
                     
                     // Сохраняем профиль

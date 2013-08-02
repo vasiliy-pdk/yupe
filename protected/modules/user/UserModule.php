@@ -35,6 +35,19 @@ class UserModule extends YWebModule
     public $autoNick                       = false;
     public $profiles                       = array();
     public $attachedProfileEvents          = array();
+    
+    /**
+     * Конфигурация для фабричного метода создания экземпляра регистрационной формы. 
+     * Соответствует подходу конфигурации компонента Yii
+     * @var mixed 
+     */
+    public $registrationFormConfig         = 'RegistrationForm';
+    /**
+     * Конфигурация для фабричного метода создания экземпляра формы профиля пользователя. 
+     * Соответствует подходу конфигурации компонента Yii
+     * @var mixed 
+     */
+    public $profileFormConfig              = 'ProfileForm';
 
     public function getParamsLabels()
     {
@@ -270,4 +283,25 @@ class UserModule extends YWebModule
         $this->raiseEvent('onBeginProfile', $event);
     }
 
+    /**
+     * Создает эксземпляр класса регистрационной формы. Берет название класса
+     * из свойства модуля registrationFormConfig
+     * 
+     * @return RegistrationForm Экземпляр регистрационной формы или потомков этого класса
+     */
+    public function createRegistrationForm() 
+    {
+        return Yii::createComponent($this->registrationFormConfig);
+    }
+    
+    /**
+     * Создает эксземпляр класса формы профиля. Берет название класса
+     * из свойства модуля profileFormConfig
+     * 
+     * @return ProfileForm Экземпляр формы профиля пользователя или потомков этого класса
+     */
+    public function createProfileForm() 
+    {
+        return Yii::createComponent($this->profileFormConfig);
+    }
 }

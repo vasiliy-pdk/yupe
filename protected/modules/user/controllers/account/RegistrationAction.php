@@ -9,8 +9,10 @@ class RegistrationAction extends CAction
         	throw new CHttpException(404, Yii::t('UserModule.user', 'Запрошенная страница не найдена!'));
         }
 
-        $form = new RegistrationForm;
+        $form = $this->controller->module->createRegistrationForm();
 
+        $formName = get_class($form);
+        
         if (Yii::app()->user->isAuthenticated()){
             $this->controller->redirect(Yii::app()->user->returnUrl);
         }
@@ -18,10 +20,10 @@ class RegistrationAction extends CAction
         $event = new CModelEvent($form);
 
         $module->onBeginRegistration($event);
-
-        if (Yii::app()->request->isPostRequest && !empty($_POST['RegistrationForm']))
+        
+        if (Yii::app()->request->isPostRequest && !empty($_POST[$formName]))
         {
-            $form->setAttributes($_POST['RegistrationForm']);
+            $form->setAttributes($_POST[$formName]);
 
             if ($form->validate())
             {
